@@ -52,10 +52,12 @@ export const compareData = (baseData, comparisonData) => {
   return results;
 };
 
-export const calculateStatistics = (results) => {
+export const calculateStatistics = (results, totalRevendedoresGeral = 0) => {
   if (results.length === 0) {
     return {
       totalRevendedores: 0,
+      totalRevendedoresGeral: totalRevendedoresGeral,
+      percentualRevendedoresAcao: 0,
       valorTotalAcao: 0,
       valorTotalGeral: 0,
       mediaDiferencaValor: 0,
@@ -64,6 +66,10 @@ export const calculateStatistics = (results) => {
   }
 
   const totalRevendedores = results.length;
+
+  const percentualRevendedoresAcao = totalRevendedoresGeral > 0
+    ? ((totalRevendedores / totalRevendedoresGeral) * 100).toFixed(2)
+    : 0;
 
   const valorTotalAcao = results.reduce(
     (sum, r) => sum + parseFloat(r.valorAcao),
@@ -89,6 +95,8 @@ export const calculateStatistics = (results) => {
 
   return {
     totalRevendedores,
+    totalRevendedoresGeral,
+    percentualRevendedoresAcao,
     valorTotalAcao,
     valorTotalGeral,
     mediaDiferencaValor,

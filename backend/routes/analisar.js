@@ -42,7 +42,13 @@ router.post('/', upload.fields([
     const filteredComparison = filterColumns(comparisonData, comparisonColumns);
 
     const results = compareData(filteredBase, filteredComparison);
-    const statistics = calculateStatistics(results);
+
+    // Contar total de revendedores únicos na planilha de comparação
+    const totalRevendedoresGeral = new Set(
+      filteredComparison.map(r => r.NomeRevendedora).filter(nome => nome)
+    ).size;
+
+    const statistics = calculateStatistics(results, totalRevendedoresGeral);
 
     res.json({
       success: true,

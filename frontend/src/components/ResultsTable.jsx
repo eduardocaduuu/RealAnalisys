@@ -130,6 +130,13 @@ const ResultsTable = ({ data, statistics }) => {
               </p>
               <p className="text-xs text-gray-500 mt-1">do total de itens</p>
             </div>
+            <div className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-sm text-gray-600 font-medium mb-1">% Revendedores da Ação</p>
+              <p className="text-2xl font-bold text-orange-700">
+                {statistics.percentualRevendedoresAcao}%
+              </p>
+              <p className="text-xs text-gray-500 mt-1">{statistics.totalRevendedores} de {statistics.totalRevendedoresGeral} revendedores</p>
+            </div>
           </div>
         )}
 
