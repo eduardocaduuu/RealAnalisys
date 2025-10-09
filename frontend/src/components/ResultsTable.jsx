@@ -101,24 +101,34 @@ const ResultsTable = ({ data, statistics }) => {
         </h2>
 
         {statistics && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-pastel-blue rounded-lg p-4">
-              <p className="text-sm text-gray-600">Total de Revendedores</p>
-              <p className="text-2xl font-bold text-blue-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-pastel-blue rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-sm text-gray-600 font-medium mb-1">Total de Revendedores</p>
+              <p className="text-3xl font-bold text-blue-700">
                 {statistics.totalRevendedores}
               </p>
+              <p className="text-xs text-gray-500 mt-1">da ação promocional</p>
             </div>
-            <div className="bg-pastel-pink rounded-lg p-4">
-              <p className="text-sm text-gray-600">Média Diferença Valor</p>
+            <div className="bg-pastel-pink rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-sm text-gray-600 font-medium mb-1">Valor Total da Ação</p>
               <p className="text-2xl font-bold text-pink-700">
-                R$ {statistics.mediaDiferencaValor}
+                R$ {statistics.valorTotalAcao}
               </p>
+              <p className="text-xs text-gray-500 mt-1">itens promocionais</p>
             </div>
-            <div className="bg-pastel-green rounded-lg p-4">
-              <p className="text-sm text-gray-600">% Itens da Ação</p>
+            <div className="bg-pastel-green rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-sm text-gray-600 font-medium mb-1">Valor Total Geral</p>
               <p className="text-2xl font-bold text-green-700">
+                R$ {statistics.valorTotalGeral}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">vendas do dia</p>
+            </div>
+            <div className="bg-pastel-purple rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-sm text-gray-600 font-medium mb-1">% Itens da Ação</p>
+              <p className="text-2xl font-bold text-purple-700">
                 {statistics.percentualItensAcao}%
               </p>
+              <p className="text-xs text-gray-500 mt-1">do total de itens</p>
             </div>
           </div>
         )}

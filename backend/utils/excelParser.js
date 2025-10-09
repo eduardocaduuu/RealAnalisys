@@ -56,12 +56,25 @@ export const calculateStatistics = (results) => {
   if (results.length === 0) {
     return {
       totalRevendedores: 0,
+      valorTotalAcao: 0,
+      valorTotalGeral: 0,
       mediaDiferencaValor: 0,
       percentualItensAcao: 0
     };
   }
 
   const totalRevendedores = results.length;
+
+  const valorTotalAcao = results.reduce(
+    (sum, r) => sum + parseFloat(r.valorAcao),
+    0
+  ).toFixed(2);
+
+  const valorTotalGeral = results.reduce(
+    (sum, r) => sum + parseFloat(r.valorGeral),
+    0
+  ).toFixed(2);
+
   const somaDiferencaValor = results.reduce(
     (sum, r) => sum + parseFloat(r.diferencaValor),
     0
@@ -76,6 +89,8 @@ export const calculateStatistics = (results) => {
 
   return {
     totalRevendedores,
+    valorTotalAcao,
+    valorTotalGeral,
     mediaDiferencaValor,
     percentualItensAcao
   };
