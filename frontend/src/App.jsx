@@ -9,13 +9,18 @@ function App() {
   const [statistics, setStatistics] = React.useState(null);
   const [error, setError] = React.useState(null);
 
-  const handleAnalyze = async (planilhaBase, planilhaComparacao) => {
+  const handleAnalyze = async (planilhaBase, planilhaComparacao, dadosExtras) => {
     setLoading(true);
     setError(null);
 
     const formData = new FormData();
     formData.append('planilhaBase', planilhaBase);
     formData.append('planilhaComparacao', planilhaComparacao);
+
+    // Adicionar dados extras ao FormData
+    if (dadosExtras) {
+      formData.append('dadosExtras', JSON.stringify(dadosExtras));
+    }
 
     try {
       const apiUrl = import.meta.env.PROD

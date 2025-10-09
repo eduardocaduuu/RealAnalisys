@@ -32,6 +32,16 @@ router.post('/', upload.fields([
     const planilhaBaseBuffer = req.files.planilhaBase[0].buffer;
     const planilhaComparacaoBuffer = req.files.planilhaComparacao[0].buffer;
 
+    // Parsear dados extras (se existirem)
+    let dadosExtras = null;
+    if (req.body.dadosExtras) {
+      try {
+        dadosExtras = JSON.parse(req.body.dadosExtras);
+      } catch (e) {
+        console.error('Erro ao parsear dadosExtras:', e);
+      }
+    }
+
     const baseData = parseExcel(planilhaBaseBuffer);
     const comparisonData = parseExcel(planilhaComparacaoBuffer);
 
@@ -48,12 +58,13 @@ router.post('/', upload.fields([
       filteredComparison.map(r => r.NomeRevendedora).filter(nome => nome)
     ).size;
 
-    const statistics = calculateStatistics(results, totalRevendedoresGeral);
+    const statistics = calculateStatistics(results, totalRevendedoresGeral, dadosExtras);
 
     res.json({
       success: true,
       data: results,
-      statistics: statistics
+      statistics: statistics,
+      dadosExtras: dadosExtras
     });
 
   } catch (error) {

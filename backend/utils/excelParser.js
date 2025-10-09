@@ -52,7 +52,7 @@ export const compareData = (baseData, comparisonData) => {
   return results;
 };
 
-export const calculateStatistics = (results, totalRevendedoresGeral = 0) => {
+export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosExtras = null) => {
   if (results.length === 0) {
     return {
       totalRevendedores: 0,
@@ -61,7 +61,11 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0) => {
       valorTotalAcao: 0,
       valorTotalGeral: 0,
       mediaDiferencaValor: 0,
-      percentualItensAcao: 0
+      percentualItensAcao: 0,
+      totalRecepcao: null,
+      gastos: null,
+      valorMeta: null,
+      percentualMeta: null
     };
   }
 
@@ -74,12 +78,12 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0) => {
   const valorTotalAcao = results.reduce(
     (sum, r) => sum + parseFloat(r.valorAcao),
     0
-  ).toFixed(2);
+  );
 
   const valorTotalGeral = results.reduce(
     (sum, r) => sum + parseFloat(r.valorGeral),
     0
-  ).toFixed(2);
+  );
 
   const somaDiferencaValor = results.reduce(
     (sum, r) => sum + parseFloat(r.diferencaValor),
@@ -93,13 +97,33 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0) => {
     ? ((totalItensAcao / totalItensGerais) * 100).toFixed(2)
     : 0;
 
+  // Processar dados de recepção
+  let totalRecepcao = null;
+  let gastos = null;
+  if (dadosExtras?.recepcao?.gastos) {
+    gastos = dadosExtras.recepcao.gastos;
+    totalRecepcao = gastos.reduce((sum, g) => sum + parseFloat(g.valor || 0), 0).toFixed(2);
+  }
+
+  // Processar meta
+  let valorMeta = null;
+  let percentualMeta = null;
+  if (dadosExtras?.meta) {
+    valorMeta = dadosExtras.meta.toFixed(2);
+    percentualMeta = ((valorTotalGeral / dadosExtras.meta) * 100).toFixed(2);
+  }
+
   return {
     totalRevendedores,
     totalRevendedoresGeral,
     percentualRevendedoresAcao,
-    valorTotalAcao,
-    valorTotalGeral,
+    valorTotalAcao: valorTotalAcao.toFixed(2),
+    valorTotalGeral: valorTotalGeral.toFixed(2),
     mediaDiferencaValor,
-    percentualItensAcao
+    percentualItensAcao,
+    totalRecepcao,
+    gastos,
+    valorMeta,
+    percentualMeta
   };
 };
