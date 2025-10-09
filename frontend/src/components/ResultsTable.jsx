@@ -2,6 +2,7 @@ import React from 'react';
 
 const ResultsTable = ({ data, statistics }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [minValue, setMinValue] = React.useState('');
   const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
 
   const handleSort = (key) => {
@@ -19,6 +20,16 @@ const ResultsTable = ({ data, statistics }) => {
       sortableData = sortableData.filter(item =>
         item.nomeRevendedora.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    if (minValue && minValue !== '') {
+      const minValueNum = parseFloat(minValue);
+      if (!isNaN(minValueNum)) {
+        sortableData = sortableData.filter(item => {
+          const valorGeral = parseFloat(item.valorGeral);
+          return valorGeral >= minValueNum;
+        });
+      }
     }
 
     if (sortConfig.key) {
@@ -39,7 +50,7 @@ const ResultsTable = ({ data, statistics }) => {
     }
 
     return sortableData;
-  }, [data, searchTerm, sortConfig]);
+  }, [data, searchTerm, minValue, sortConfig]);
 
   const exportToCSV = () => {
     const headers = [
@@ -119,6 +130,13 @@ const ResultsTable = ({ data, statistics }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            type="number"
+            placeholder="Valor Geral mínimo (ex: 500)"
+            value={minValue}
+            onChange={(e) => setMinValue(e.target.value)}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
           />
           <button
             onClick={exportToCSV}
@@ -204,9 +222,11 @@ const ResultsTable = ({ data, statistics }) => {
         </table>
       </div>
 
-      {sortedData.length === 0 && searchTerm && (
+      {sortedData.length === 0 && (searchTerm || minValue) && (
         <p className="text-center text-gray-500 py-8">
-          Nenhum resultado encontrado para "{searchTerm}"
+          Nenhum resultado encontrado com os filtros aplicados
+          {searchTerm && ` (Nome: "${searchTerm}")`}
+          {minValue && ` (Valor mínimo: R$ ${minValue})`}
         </p>
       )}
     </div>
