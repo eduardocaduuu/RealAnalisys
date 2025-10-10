@@ -65,7 +65,7 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
       totalRecepcao: null,
       gastos: null,
       valorMeta: null,
-      percentualMeta: null
+      percentualAcaoNaMeta: null
     };
   }
 
@@ -107,10 +107,11 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
 
   // Processar meta
   let valorMeta = null;
-  let percentualMeta = null;
+  let percentualAcaoNaMeta = null;
   if (dadosExtras?.meta) {
     valorMeta = dadosExtras.meta.toFixed(2);
-    percentualMeta = ((valorTotalGeral / dadosExtras.meta) * 100).toFixed(2);
+    // Calcula quanto % da meta (mensal/período) foi gerado pela ação do dia
+    percentualAcaoNaMeta = ((valorTotalAcao / dadosExtras.meta) * 100).toFixed(2);
   }
 
   return {
@@ -124,6 +125,6 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
     totalRecepcao,
     gastos,
     valorMeta,
-    percentualMeta
+    percentualAcaoNaMeta
   };
 };

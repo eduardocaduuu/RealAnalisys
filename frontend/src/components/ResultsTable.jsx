@@ -210,45 +210,53 @@ const ResultsTable = ({ data, statistics }) => {
                   <p className="text-2xl font-bold text-emerald-700">
                     R$ {statistics.valorMeta}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">valor objetivo</p>
+                  <p className="text-xs text-gray-500 mt-1">valor objetivo (mensal/período)</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-amber-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">% da Meta Atingido</p>
-                  <p className="text-3xl font-bold text-amber-700">
-                    {statistics.percentualMeta}%
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-teal-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Contribuição da Ação</p>
+                  <p className="text-3xl font-bold text-teal-700">
+                    {statistics.percentualAcaoNaMeta}%
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {parseFloat(statistics.percentualMeta) >= 100
-                      ? '🎉 Meta superada!'
-                      : parseFloat(statistics.percentualMeta) >= 80
-                      ? '✓ Próximo da meta'
-                      : '⚠ Abaixo da meta'}
+                    da meta foi gerado nesta ação
+                  </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    R$ {statistics.valorTotalAcao} de R$ {statistics.valorMeta}
                   </p>
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${
-                        parseFloat(statistics.percentualMeta) >= 100
+                        parseFloat(statistics.percentualAcaoNaMeta) >= 50
                           ? 'bg-green-500'
-                          : parseFloat(statistics.percentualMeta) >= 80
+                          : parseFloat(statistics.percentualAcaoNaMeta) >= 25
                           ? 'bg-yellow-500'
-                          : 'bg-red-500'
+                          : 'bg-blue-500'
                       }`}
-                      style={{ width: `${Math.min(parseFloat(statistics.percentualMeta), 100)}%` }}
+                      style={{ width: `${Math.min(parseFloat(statistics.percentualAcaoNaMeta), 100)}%` }}
                     ></div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-teal-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">Impacto da Ação na Meta</p>
-                  <p className="text-2xl font-bold text-teal-700">
-                    {((parseFloat(statistics.valorTotalAcao) / parseFloat(statistics.valorMeta)) * 100).toFixed(2)}%
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    da meta foi a ação promocional
+                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-indigo-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Análise de Performance</p>
+                  <p className="text-lg font-bold text-indigo-700">
+                    {parseFloat(statistics.percentualAcaoNaMeta) >= 50
+                      ? '🎉 Excelente!'
+                      : parseFloat(statistics.percentualAcaoNaMeta) >= 25
+                      ? '✓ Boa contribuição'
+                      : parseFloat(statistics.percentualAcaoNaMeta) >= 10
+                      ? '📊 Impacto moderado'
+                      : '⚠ Baixo impacto'}
                   </p>
                   <p className="text-xs text-gray-600 mt-2">
-                    R$ {statistics.valorTotalAcao} de R$ {statistics.valorMeta}
+                    {parseFloat(statistics.percentualAcaoNaMeta) >= 50
+                      ? 'A ação teve impacto extraordinário na meta'
+                      : parseFloat(statistics.percentualAcaoNaMeta) >= 25
+                      ? 'A ação contribuiu significativamente'
+                      : parseFloat(statistics.percentualAcaoNaMeta) >= 10
+                      ? 'Ação ajudou no atingimento da meta'
+                      : 'Considere estratégias para maior impacto'}
                   </p>
                 </div>
               </>
