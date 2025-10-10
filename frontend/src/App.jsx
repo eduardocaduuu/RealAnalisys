@@ -55,7 +55,7 @@ function App() {
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            PromoAnalyzer
+            Análise de Ações
           </h1>
           <p className="text-gray-600 text-lg">
             Análise Inteligente de Ações Promocionais

@@ -63,43 +63,6 @@ const ResultsTable = ({ data, statistics }) => {
     return sortableData;
   }, [data, searchTerm, minValue, sortConfig]);
 
-  const exportToCSV = () => {
-    const headers = [
-      'Nome Revendedora',
-      'Itens Ação',
-      'Valor Ação',
-      'Itens Gerais',
-      'Valor Geral',
-      'Diferença Itens',
-      'Diferença Valor'
-    ];
-
-    const csvContent = [
-      headers.join(','),
-      ...sortedData.map(row =>
-        [
-          `"${row.nomeRevendedora}"`,
-          row.itensAcao,
-          row.valorAcao,
-          row.itensGerais,
-          row.valorGeral,
-          row.diferencaItens,
-          row.diferencaValor
-        ].join(',')
-      )
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'analise_promocional.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const exportCardsToPNG = async () => {
     if (!cardsRef.current) return;
 
@@ -301,12 +264,6 @@ const ResultsTable = ({ data, statistics }) => {
             onChange={(e) => setMinValue(e.target.value)}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
           />
-          <button
-            onClick={exportToCSV}
-            className="btn-primary whitespace-nowrap"
-          >
-            Exportar CSV
-          </button>
         </div>
       </div>
 
