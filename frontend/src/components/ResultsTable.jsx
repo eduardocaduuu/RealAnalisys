@@ -1,9 +1,11 @@
 import React from 'react';
+import html2canvas from 'html2canvas';
 
 const ResultsTable = ({ data, statistics }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [minValue, setMinValue] = React.useState('');
   const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
+  const cardsRef = React.useRef(null);
 
   // Função para formatar valores monetários
   const formatCurrency = (value) => {
@@ -98,6 +100,40 @@ const ResultsTable = ({ data, statistics }) => {
     document.body.removeChild(link);
   };
 
+  const exportCardsToPNG = async () => {
+    if (!cardsRef.current) return;
+
+    try {
+      // Configurações para alta qualidade
+      const canvas = await html2canvas(cardsRef.current, {
+        scale: 3, // 3x a resolução para maior qualidade
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f9fafb', // Fundo cinza claro
+        logging: false,
+        windowWidth: cardsRef.current.scrollWidth,
+        windowHeight: cardsRef.current.scrollHeight,
+      });
+
+      // Converter para blob e fazer download
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().split('T')[0];
+        link.setAttribute('href', url);
+        link.setAttribute('download', `estatisticas_promocionais_${timestamp}.png`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 'image/png', 1.0); // Qualidade máxima
+    } catch (error) {
+      console.error('Erro ao gerar imagem:', error);
+      alert('Erro ao gerar imagem. Por favor, tente novamente.');
+    }
+  };
+
   if (!data || data.length === 0) {
     return null;
   }
@@ -110,7 +146,21 @@ const ResultsTable = ({ data, statistics }) => {
         </h2>
 
         {statistics && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <>
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={exportCardsToPNG}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Baixar Cards em PNG
+              </button>
+            </div>
+
+            <div ref={cardsRef} className="bg-gray-50 p-6 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div className="bg-pastel-blue rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-sm text-gray-600 font-medium mb-1">Total de Revendedores</p>
               <p className="text-3xl font-bold text-blue-700">
@@ -232,6 +282,9 @@ const ResultsTable = ({ data, statistics }) => {
               </>
             )}
           </div>
+        )}
+            </div>
+          </>
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
