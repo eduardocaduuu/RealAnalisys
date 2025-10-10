@@ -140,6 +140,122 @@ const ResultsTable = ({ data, statistics }) => {
           </div>
         )}
 
+        {/* Cards de Análise de Recepção e Meta */}
+        {statistics && (statistics.totalRecepcao || statistics.valorMeta) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 mt-6">
+            {/* Card de Gastos com Recepção */}
+            {statistics.totalRecepcao && (
+              <>
+                <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-red-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Gastos com Recepção</p>
+                  <p className="text-2xl font-bold text-red-700">
+                    R$ {statistics.totalRecepcao}
+                  </p>
+                  {statistics.gastos && statistics.gastos.length > 0 && (
+                    <div className="mt-2 text-xs text-gray-600">
+                      {statistics.gastos.map((g, i) => (
+                        <div key={i} className="flex justify-between">
+                          <span>{g.item}</span>
+                          <span>R$ {parseFloat(g.valor).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-cyan-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Lucro Líquido da Ação</p>
+                  <p className="text-2xl font-bold text-cyan-700">
+                    R$ {(parseFloat(statistics.valorTotalAcao) - parseFloat(statistics.totalRecepcao)).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    após custos de recepção
+                  </p>
+                  <div className="mt-2 text-xs">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Valor Ação:</span>
+                      <span className="text-green-600">+R$ {statistics.valorTotalAcao}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Recepção:</span>
+                      <span className="text-red-600">-R$ {statistics.totalRecepcao}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-purple-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">% Custo Recepção</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {((parseFloat(statistics.totalRecepcao) / parseFloat(statistics.valorTotalAcao)) * 100).toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    do valor total da ação
+                  </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {parseFloat(statistics.totalRecepcao) < parseFloat(statistics.valorTotalAcao) * 0.1
+                      ? '✓ Custo baixo e eficiente'
+                      : parseFloat(statistics.totalRecepcao) < parseFloat(statistics.valorTotalAcao) * 0.2
+                      ? '⚠ Custo moderado'
+                      : '⚠ Custo elevado, considere otimizar'}
+                  </p>
+                </div>
+              </>
+            )}
+
+            {/* Cards de Meta */}
+            {statistics.valorMeta && (
+              <>
+                <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-emerald-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Meta do Período</p>
+                  <p className="text-2xl font-bold text-emerald-700">
+                    R$ {statistics.valorMeta}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">valor objetivo</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-amber-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">% da Meta Atingido</p>
+                  <p className="text-3xl font-bold text-amber-700">
+                    {statistics.percentualMeta}%
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {parseFloat(statistics.percentualMeta) >= 100
+                      ? '🎉 Meta superada!'
+                      : parseFloat(statistics.percentualMeta) >= 80
+                      ? '✓ Próximo da meta'
+                      : '⚠ Abaixo da meta'}
+                  </p>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${
+                        parseFloat(statistics.percentualMeta) >= 100
+                          ? 'bg-green-500'
+                          : parseFloat(statistics.percentualMeta) >= 80
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
+                      }`}
+                      style={{ width: `${Math.min(parseFloat(statistics.percentualMeta), 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-teal-400">
+                  <p className="text-sm text-gray-600 font-medium mb-1">Impacto da Ação na Meta</p>
+                  <p className="text-2xl font-bold text-teal-700">
+                    {((parseFloat(statistics.valorTotalAcao) / parseFloat(statistics.valorMeta)) * 100).toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    da meta foi a ação promocional
+                  </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    R$ {statistics.valorTotalAcao} de R$ {statistics.valorMeta}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <input
             type="text"
