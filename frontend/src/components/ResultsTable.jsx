@@ -5,6 +5,15 @@ const ResultsTable = ({ data, statistics }) => {
   const [minValue, setMinValue] = React.useState('');
   const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
 
+  // Função para formatar valores monetários
+  const formatCurrency = (value) => {
+    const numValue = parseFloat(value);
+    return numValue.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -112,14 +121,14 @@ const ResultsTable = ({ data, statistics }) => {
             <div className="bg-pastel-pink rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-sm text-gray-600 font-medium mb-1">Valor Total da Ação</p>
               <p className="text-2xl font-bold text-pink-700">
-                R$ {statistics.valorTotalAcao}
+                R$ {formatCurrency(statistics.valorTotalAcao)}
               </p>
               <p className="text-xs text-gray-500 mt-1">itens promocionais</p>
             </div>
             <div className="bg-pastel-green rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-sm text-gray-600 font-medium mb-1">Valor Total Geral</p>
               <p className="text-2xl font-bold text-green-700">
-                R$ {statistics.valorTotalGeral}
+                R$ {formatCurrency(statistics.valorTotalGeral)}
               </p>
               <p className="text-xs text-gray-500 mt-1">vendas do dia</p>
             </div>
@@ -149,14 +158,14 @@ const ResultsTable = ({ data, statistics }) => {
                 <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-red-400">
                   <p className="text-sm text-gray-600 font-medium mb-1">Gastos com Recepção</p>
                   <p className="text-2xl font-bold text-red-700">
-                    R$ {statistics.totalRecepcao}
+                    R$ {formatCurrency(statistics.totalRecepcao)}
                   </p>
                   {statistics.gastos && statistics.gastos.length > 0 && (
                     <div className="mt-2 text-xs text-gray-600">
                       {statistics.gastos.map((g, i) => (
                         <div key={i} className="flex justify-between">
                           <span>{g.item}</span>
-                          <span>R$ {parseFloat(g.valor).toFixed(2)}</span>
+                          <span>R$ {formatCurrency(g.valor)}</span>
                         </div>
                       ))}
                     </div>
@@ -166,7 +175,7 @@ const ResultsTable = ({ data, statistics }) => {
                 <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-cyan-400">
                   <p className="text-sm text-gray-600 font-medium mb-1">Lucro Líquido da Ação</p>
                   <p className="text-2xl font-bold text-cyan-700">
-                    R$ {(parseFloat(statistics.valorTotalAcao) - parseFloat(statistics.totalRecepcao)).toFixed(2)}
+                    R$ {formatCurrency(parseFloat(statistics.valorTotalAcao) - parseFloat(statistics.totalRecepcao))}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     após custos de recepção
@@ -174,30 +183,13 @@ const ResultsTable = ({ data, statistics }) => {
                   <div className="mt-2 text-xs">
                     <div className="flex justify-between text-gray-600">
                       <span>Valor Ação:</span>
-                      <span className="text-green-600">+R$ {statistics.valorTotalAcao}</span>
+                      <span className="text-green-600">+R$ {formatCurrency(statistics.valorTotalAcao)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span>Recepção:</span>
-                      <span className="text-red-600">-R$ {statistics.totalRecepcao}</span>
+                      <span className="text-red-600">-R$ {formatCurrency(statistics.totalRecepcao)}</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-purple-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">% Custo Recepção</p>
-                  <p className="text-2xl font-bold text-purple-700">
-                    {((parseFloat(statistics.totalRecepcao) / parseFloat(statistics.valorTotalAcao)) * 100).toFixed(2)}%
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    do valor total da ação
-                  </p>
-                  <p className="text-xs text-gray-600 mt-2">
-                    {parseFloat(statistics.totalRecepcao) < parseFloat(statistics.valorTotalAcao) * 0.1
-                      ? '✓ Custo baixo e eficiente'
-                      : parseFloat(statistics.totalRecepcao) < parseFloat(statistics.valorTotalAcao) * 0.2
-                      ? '⚠ Custo moderado'
-                      : '⚠ Custo elevado, considere otimizar'}
-                  </p>
                 </div>
               </>
             )}
@@ -208,7 +200,7 @@ const ResultsTable = ({ data, statistics }) => {
                 <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-emerald-400">
                   <p className="text-sm text-gray-600 font-medium mb-1">Meta do Período</p>
                   <p className="text-2xl font-bold text-emerald-700">
-                    R$ {statistics.valorMeta}
+                    R$ {formatCurrency(statistics.valorMeta)}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">valor objetivo (mensal/período)</p>
                 </div>
@@ -222,7 +214,7 @@ const ResultsTable = ({ data, statistics }) => {
                     da meta foi gerado nesta ação
                   </p>
                   <p className="text-xs text-gray-600 mt-2">
-                    R$ {statistics.valorTotalAcao} de R$ {statistics.valorMeta}
+                    R$ {formatCurrency(statistics.valorTotalAcao)} de R$ {formatCurrency(statistics.valorMeta)}
                   </p>
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -236,28 +228,6 @@ const ResultsTable = ({ data, statistics }) => {
                       style={{ width: `${Math.min(parseFloat(statistics.percentualAcaoNaMeta), 100)}%` }}
                     ></div>
                   </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-indigo-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">Análise de Performance</p>
-                  <p className="text-lg font-bold text-indigo-700">
-                    {parseFloat(statistics.percentualAcaoNaMeta) >= 50
-                      ? '🎉 Excelente!'
-                      : parseFloat(statistics.percentualAcaoNaMeta) >= 25
-                      ? '✓ Boa contribuição'
-                      : parseFloat(statistics.percentualAcaoNaMeta) >= 10
-                      ? '📊 Impacto moderado'
-                      : '⚠ Baixo impacto'}
-                  </p>
-                  <p className="text-xs text-gray-600 mt-2">
-                    {parseFloat(statistics.percentualAcaoNaMeta) >= 50
-                      ? 'A ação teve impacto extraordinário na meta'
-                      : parseFloat(statistics.percentualAcaoNaMeta) >= 25
-                      ? 'A ação contribuiu significativamente'
-                      : parseFloat(statistics.percentualAcaoNaMeta) >= 10
-                      ? 'Ação ajudou no atingimento da meta'
-                      : 'Considere estratégias para maior impacto'}
-                  </p>
                 </div>
               </>
             )}
@@ -344,9 +314,9 @@ const ResultsTable = ({ data, statistics }) => {
               >
                 <td className="table-cell font-medium">{row.nomeRevendedora}</td>
                 <td className="table-cell text-center">{row.itensAcao}</td>
-                <td className="table-cell text-right">R$ {row.valorAcao}</td>
+                <td className="table-cell text-right">R$ {formatCurrency(row.valorAcao)}</td>
                 <td className="table-cell text-center">{row.itensGerais}</td>
-                <td className="table-cell text-right">R$ {row.valorGeral}</td>
+                <td className="table-cell text-right">R$ {formatCurrency(row.valorGeral)}</td>
                 <td className="table-cell text-center">
                   <span className={row.diferencaItens > 0 ? 'text-green-600' : 'text-gray-600'}>
                     {row.diferencaItens > 0 ? '+' : ''}{row.diferencaItens}
@@ -354,7 +324,7 @@ const ResultsTable = ({ data, statistics }) => {
                 </td>
                 <td className="table-cell text-right">
                   <span className={row.diferencaValor > 0 ? 'text-green-600' : 'text-gray-600'}>
-                    R$ {row.diferencaValor > 0 ? '+' : ''}{row.diferencaValor}
+                    R$ {row.diferencaValor > 0 ? '+' : ''}{formatCurrency(Math.abs(row.diferencaValor))}
                   </span>
                 </td>
               </tr>

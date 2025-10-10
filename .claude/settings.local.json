@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Adicionar cards de valores totais na análise\n\nMelhorias nos cards de estatísticas:\n- Card \"Valor Total da Ação\": soma de todos os valores da planilha base (itens promocionais)\n- Card \"Valor Total Geral\": soma de todos os valores das vendas gerais do dia\n- Card \"Total de Revendedores\": melhorado visualmente com descrição\n- Card \"% Itens da Ação\": mantido com melhor layout\n- Grid responsivo: 1 coluna em mobile, 2 em tablet, 4 em desktop\n- Sombras e efeitos hover nos cards\n- Descrições auxiliares em cada card\n\nBackend:\n- Função calculateStatistics atualizada para calcular valorTotalAcao e valorTotalGeral\n- Estatísticas mais completas retornadas pela API\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
