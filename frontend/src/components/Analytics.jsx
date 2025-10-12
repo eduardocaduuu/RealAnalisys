@@ -167,6 +167,7 @@ const Analytics = ({ data, statistics }) => {
 
     // Calcular totais para as porcentagens
     const valorTotalPromocional = statistics?.valorTotalAcao ? parseFloat(statistics.valorTotalAcao) : 0;
+    const valorTotalGeral = statistics?.valorTotalGeral ? parseFloat(statistics.valorTotalGeral) : 0;
     const valorMeta = statistics?.valorMeta ? parseFloat(statistics.valorMeta) : 0;
 
     return completos
@@ -178,6 +179,7 @@ const Analytics = ({ data, statistics }) => {
         // Calcular porcentagens
         const percentualNaMeta = valorMeta > 0 ? ((valorGeral / valorMeta) * 100).toFixed(2) : null;
         const percentualPromocional = valorTotalPromocional > 0 ? ((valorAcao / valorTotalPromocional) * 100).toFixed(2) : null;
+        const percentualFaturamentoGeral = valorTotalGeral > 0 ? ((valorGeral / valorTotalGeral) * 100).toFixed(2) : null;
 
         return {
           posicao: index + 1,
@@ -188,7 +190,8 @@ const Analytics = ({ data, statistics }) => {
           itensGerais: item.itensGerais,
           itensComuns: item.itensGerais - item.itensAcao,
           percentualNaMeta: percentualNaMeta,
-          percentualPromocional: percentualPromocional
+          percentualPromocional: percentualPromocional,
+          percentualFaturamentoGeral: percentualFaturamentoGeral
         };
       });
   }, [filteredData, statistics]);
@@ -239,6 +242,11 @@ const Analytics = ({ data, statistics }) => {
                       {item.percentualPromocional && (
                         <span className="bg-amber-100 px-2 py-0.5 rounded font-semibold">
                           {item.percentualPromocional}% do faturamento promo
+                        </span>
+                      )}
+                      {item.percentualFaturamentoGeral && (
+                        <span className="bg-cyan-100 px-2 py-0.5 rounded font-semibold">
+                          {item.percentualFaturamentoGeral}% do faturamento total
                         </span>
                       )}
                       {item.percentualNaMeta && (
