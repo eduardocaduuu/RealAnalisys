@@ -104,7 +104,7 @@ const Analytics = ({ data, statistics }) => {
     return filtered;
   }, [data, minValue]);
 
-  // Top 10 por Itens Promocionais
+  // Top 10 por Itens Específicos
   const top10ItensAcao = React.useMemo(() => {
     return [...filteredData]
       .sort((a, b) => b.itensAcao - a.itensAcao)
@@ -156,12 +156,12 @@ const Analytics = ({ data, statistics }) => {
       }));
   }, [filteredData]);
 
-  // Compradores Completos - TODOS (Itens Promocionais E Itens Gerais)
+  // Compradores Completos - TODOS (Itens Específicos E Itens Gerais)
   const compradoresCompletos = React.useMemo(() => {
-    // Filtrar apenas revendedores que compraram AMBOS: itens promocionais E itens gerais
+    // Filtrar apenas revendedores que compraram AMBOS: itens específicos E itens gerais
     const completos = filteredData.filter(item => {
       const temItensAcao = item.itensAcao > 0;
-      const temItensGerais = item.itensGerais > item.itensAcao; // Tem itens além dos promocionais
+      const temItensGerais = item.itensGerais > item.itensAcao; // Tem itens além dos específicos
       return temItensAcao && temItensGerais;
     });
 
@@ -234,14 +234,14 @@ const Analytics = ({ data, statistics }) => {
                     </p>
                     <div className="flex gap-2 mt-1 text-xs text-gray-600 flex-wrap">
                       <span className="bg-pink-100 px-2 py-0.5 rounded">
-                        {item.itensAcao} promocionais
+                        {item.itensAcao} específicos
                       </span>
                       <span className="bg-blue-100 px-2 py-0.5 rounded">
                         {item.itensComuns} comuns
                       </span>
                       {item.percentualPromocional && (
                         <span className="bg-amber-100 px-2 py-0.5 rounded font-semibold">
-                          {item.percentualPromocional}% do faturamento promo
+                          {item.percentualPromocional}% do faturamento específico
                         </span>
                       )}
                       {item.percentualFaturamentoGeral && (
@@ -428,10 +428,24 @@ const Analytics = ({ data, statistics }) => {
       <div ref={allChartsRef} className="space-y-6 bg-gray-50 p-6 rounded-lg">
         {/* Ranking Especial - Compradores Completos (PRIMEIRO) */}
         <div className="mb-6">
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <div>
+                <h4 className="text-sm font-semibold text-blue-800 mb-1">O que são "Itens Específicos"?</h4>
+                <p className="text-sm text-blue-700">
+                  São itens que o gestor deu foco especial nas vendas durante a ação do dia. Podem ser produtos promocionais, em destaque, ou qualquer item estratégico definido pela gestão.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <RankingCardCompleto
             data={compradoresCompletos}
             title="Compradores Completos"
-            subtitle={`${compradoresCompletos.length} revendedores que compraram itens promocionais E itens comuns`}
+            subtitle={`${compradoresCompletos.length} revendedores que compraram itens específicos E itens comuns`}
             color="bg-gradient-to-r from-purple-500 to-violet-600"
             chartRef={chart5Ref}
             fileName="compradores_completos"
@@ -442,12 +456,12 @@ const Analytics = ({ data, statistics }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RankingCard
             data={top10ItensAcao}
-            title="Top 10 - Itens Promocionais"
-            subtitle="Revendedores que compraram mais itens da ação"
+            title="Top 10 - Itens Específicos"
+            subtitle="Revendedores que compraram mais itens específicos"
             itemsLabel="itens"
             color="bg-gradient-to-r from-pink-500 to-rose-500"
             chartRef={chart1Ref}
-            fileName="top10_itens_promocionais"
+            fileName="top10_itens_especificos"
           />
 
           <RankingCard
@@ -465,12 +479,12 @@ const Analytics = ({ data, statistics }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RankingCard
             data={top10ValorAcao}
-            title="Top 10 - Valor da Ação"
-            subtitle="Revendedores com maior valor em itens promocionais"
+            title="Top 10 - Valor Específico"
+            subtitle="Revendedores com maior valor em itens específicos"
             valueLabel="R$"
             color="bg-gradient-to-r from-amber-500 to-orange-500"
             chartRef={chart3Ref}
-            fileName="top10_valor_acao"
+            fileName="top10_valor_especifico"
           />
 
           <RankingCard
