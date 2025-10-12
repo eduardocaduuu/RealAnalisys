@@ -140,7 +140,7 @@ function App() {
 
         {/* Conteúdo da Aba Analytics */}
         {currentTab === 'analytics' && (
-          <Analytics data={results} />
+          <Analytics data={results} statistics={statistics} />
         )}
       </div>
     </div>

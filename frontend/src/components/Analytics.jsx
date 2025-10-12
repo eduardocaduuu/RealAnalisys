@@ -1,7 +1,7 @@
 import React from 'react';
 import html2canvas from 'html2canvas';
 
-const Analytics = ({ data }) => {
+const Analytics = ({ data, statistics }) => {
   const [minValue, setMinValue] = React.useState('');
 
   // Refs para cada gráfico
@@ -165,17 +165,33 @@ const Analytics = ({ data }) => {
       return temItensAcao && temItensGerais;
     });
 
+    // Calcular totais para as porcentagens
+    const valorTotalPromocional = statistics?.valorTotalAcao ? parseFloat(statistics.valorTotalAcao) : 0;
+    const valorMeta = statistics?.valorMeta ? parseFloat(statistics.valorMeta) : 0;
+
     return completos
       .sort((a, b) => parseFloat(b.valorGeral) - parseFloat(a.valorGeral))
-      .map((item, index) => ({
-        posicao: index + 1,
-        nomeCompleto: item.nomeRevendedora,
-        valor: parseFloat(item.valorGeral),
-        itensAcao: item.itensAcao,
-        itensGerais: item.itensGerais,
-        itensComuns: item.itensGerais - item.itensAcao // Itens que não são da ação
-      }));
-  }, [filteredData]);
+      .map((item, index) => {
+        const valorAcao = parseFloat(item.valorAcao);
+        const valorGeral = parseFloat(item.valorGeral);
+
+        // Calcular porcentagens
+        const percentualNaMeta = valorMeta > 0 ? ((valorGeral / valorMeta) * 100).toFixed(2) : null;
+        const percentualPromocional = valorTotalPromocional > 0 ? ((valorAcao / valorTotalPromocional) * 100).toFixed(2) : null;
+
+        return {
+          posicao: index + 1,
+          nomeCompleto: item.nomeRevendedora,
+          valor: valorGeral,
+          valorAcao: valorAcao,
+          itensAcao: item.itensAcao,
+          itensGerais: item.itensGerais,
+          itensComuns: item.itensGerais - item.itensAcao,
+          percentualNaMeta: percentualNaMeta,
+          percentualPromocional: percentualPromocional
+        };
+      });
+  }, [filteredData, statistics]);
 
   // Componente de Ranking Visual Especial para Compradores Completos
   const RankingCardCompleto = ({ data, title, subtitle, color, chartRef, fileName }) => {
@@ -213,13 +229,23 @@ const Analytics = ({ data }) => {
                     <p className="text-sm font-semibold text-gray-800 break-words">
                       {item.nomeCompleto}
                     </p>
-                    <div className="flex gap-3 mt-1 text-xs text-gray-600 flex-wrap">
+                    <div className="flex gap-2 mt-1 text-xs text-gray-600 flex-wrap">
                       <span className="bg-pink-100 px-2 py-0.5 rounded">
                         {item.itensAcao} promocionais
                       </span>
                       <span className="bg-blue-100 px-2 py-0.5 rounded">
                         {item.itensComuns} comuns
                       </span>
+                      {item.percentualPromocional && (
+                        <span className="bg-amber-100 px-2 py-0.5 rounded font-semibold">
+                          {item.percentualPromocional}% do faturamento promo
+                        </span>
+                      )}
+                      {item.percentualNaMeta && (
+                        <span className="bg-emerald-100 px-2 py-0.5 rounded font-semibold">
+                          {item.percentualNaMeta}% da meta
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex-shrink-0 text-right">
