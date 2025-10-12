@@ -110,8 +110,8 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
   let percentualAcaoNaMeta = null;
   if (dadosExtras?.meta) {
     valorMeta = dadosExtras.meta.toFixed(2);
-    // Calcula quanto % da meta (mensal/período) foi gerado pela ação do dia
-    percentualAcaoNaMeta = ((valorTotalAcao / dadosExtras.meta) * 100).toFixed(2);
+    // Calcula quanto % da meta (mensal/período) foi gerado pelo valor total geral do dia
+    percentualAcaoNaMeta = ((valorTotalGeral / dadosExtras.meta) * 100).toFixed(2);
   }
 
   return {

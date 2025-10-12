@@ -144,6 +144,18 @@ const ResultsTable = ({ data, statistics }) => {
                 R$ {formatCurrency(statistics.valorTotalGeral)}
               </p>
               <p className="text-xs text-gray-500 mt-1">vendas do dia</p>
+              {statistics.totalRecepcao && (
+                <div className="mt-2 text-xs">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Recepção:</span>
+                    <span className="text-red-600">-R$ {formatCurrency(statistics.totalRecepcao)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-700 font-semibold border-t border-gray-300 pt-1 mt-1">
+                    <span>Líquido:</span>
+                    <span className="text-green-700">R$ {formatCurrency(parseFloat(statistics.valorTotalGeral) - parseFloat(statistics.totalRecepcao))}</span>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="bg-pastel-purple rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-sm text-gray-600 font-medium mb-1">% Itens da Ação</p>
@@ -184,25 +196,6 @@ const ResultsTable = ({ data, statistics }) => {
                   )}
                 </div>
 
-                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-cyan-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">Lucro Líquido da Ação</p>
-                  <p className="text-2xl font-bold text-cyan-700">
-                    R$ {formatCurrency(parseFloat(statistics.valorTotalAcao) - parseFloat(statistics.totalRecepcao))}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    após custos de recepção
-                  </p>
-                  <div className="mt-2 text-xs">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Valor Ação:</span>
-                      <span className="text-green-600">+R$ {formatCurrency(statistics.valorTotalAcao)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-600">
-                      <span>Recepção:</span>
-                      <span className="text-red-600">-R$ {formatCurrency(statistics.totalRecepcao)}</span>
-                    </div>
-                  </div>
-                </div>
               </>
             )}
 
@@ -218,15 +211,15 @@ const ResultsTable = ({ data, statistics }) => {
                 </div>
 
                 <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-teal-400">
-                  <p className="text-sm text-gray-600 font-medium mb-1">Contribuição da Ação</p>
+                  <p className="text-sm text-gray-600 font-medium mb-1">Contribuição para a Meta</p>
                   <p className="text-3xl font-bold text-teal-700">
                     {statistics.percentualAcaoNaMeta}%
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    da meta foi gerado nesta ação
+                    da meta alcançada com vendas do dia
                   </p>
                   <p className="text-xs text-gray-600 mt-2">
-                    R$ {formatCurrency(statistics.valorTotalAcao)} de R$ {formatCurrency(statistics.valorMeta)}
+                    R$ {formatCurrency(statistics.valorTotalGeral)} de R$ {formatCurrency(statistics.valorMeta)}
                   </p>
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
