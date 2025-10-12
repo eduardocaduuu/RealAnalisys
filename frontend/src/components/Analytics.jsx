@@ -156,18 +156,17 @@ const Analytics = ({ data }) => {
       }));
   }, [filteredData]);
 
-  // Top 10 - Compradores Completos (Itens Promocionais E Itens Gerais)
-  const top10CompradoresCompletos = React.useMemo(() => {
+  // Compradores Completos - TODOS (Itens Promocionais E Itens Gerais)
+  const compradoresCompletos = React.useMemo(() => {
     // Filtrar apenas revendedores que compraram AMBOS: itens promocionais E itens gerais
-    const compradoresCompletos = filteredData.filter(item => {
+    const completos = filteredData.filter(item => {
       const temItensAcao = item.itensAcao > 0;
       const temItensGerais = item.itensGerais > item.itensAcao; // Tem itens além dos promocionais
       return temItensAcao && temItensGerais;
     });
 
-    return compradoresCompletos
+    return completos
       .sort((a, b) => parseFloat(b.valorGeral) - parseFloat(a.valorGeral))
-      .slice(0, 10)
       .map((item, index) => ({
         posicao: index + 1,
         nomeCompleto: item.nomeRevendedora,
@@ -396,12 +395,12 @@ const Analytics = ({ data }) => {
         {/* Ranking Especial - Compradores Completos (PRIMEIRO) */}
         <div className="mb-6">
           <RankingCardCompleto
-            data={top10CompradoresCompletos}
-            title="Top 10 - Compradores Completos"
-            subtitle="Revendedores que compraram itens promocionais E itens comuns"
+            data={compradoresCompletos}
+            title="Compradores Completos"
+            subtitle={`${compradoresCompletos.length} revendedores que compraram itens promocionais E itens comuns`}
             color="bg-gradient-to-r from-purple-500 to-violet-600"
             chartRef={chart5Ref}
-            fileName="top10_compradores_completos"
+            fileName="compradores_completos"
           />
         </div>
 
