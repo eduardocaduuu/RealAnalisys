@@ -9,6 +9,7 @@ const Analytics = ({ data }) => {
   const chart2Ref = React.useRef(null);
   const chart3Ref = React.useRef(null);
   const chart4Ref = React.useRef(null);
+  const chart5Ref = React.useRef(null);
   const allChartsRef = React.useRef(null);
 
   // Função para formatar valores monetários
@@ -155,6 +156,98 @@ const Analytics = ({ data }) => {
       }));
   }, [filteredData]);
 
+  // Top 10 - Compradores Completos (Itens Promocionais E Itens Gerais)
+  const top10CompradoresCompletos = React.useMemo(() => {
+    // Filtrar apenas revendedores que compraram AMBOS: itens promocionais E itens gerais
+    const compradoresCompletos = filteredData.filter(item => {
+      const temItensAcao = item.itensAcao > 0;
+      const temItensGerais = item.itensGerais > item.itensAcao; // Tem itens além dos promocionais
+      return temItensAcao && temItensGerais;
+    });
+
+    return compradoresCompletos
+      .sort((a, b) => parseFloat(b.valorGeral) - parseFloat(a.valorGeral))
+      .slice(0, 10)
+      .map((item, index) => ({
+        posicao: index + 1,
+        nomeCompleto: item.nomeRevendedora,
+        valor: parseFloat(item.valorGeral),
+        itensAcao: item.itensAcao,
+        itensGerais: item.itensGerais,
+        itensComuns: item.itensGerais - item.itensAcao // Itens que não são da ação
+      }));
+  }, [filteredData]);
+
+  // Componente de Ranking Visual Especial para Compradores Completos
+  const RankingCardCompleto = ({ data, title, subtitle, color, chartRef, fileName }) => {
+    const maxValue = data.length > 0 ? Math.max(...data.map(d => d.valor)) : 1;
+
+    return (
+      <div ref={chartRef} className="card">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+          </div>
+          <button
+            onClick={() => downloadChartAsPNG(chartRef, fileName)}
+            className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            PNG
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {data.map((item) => {
+            const percentage = (item.valor / maxValue) * 100;
+
+            return (
+              <div key={item.posicao} className="group">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-full ${color} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
+                    {item.posicao}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 break-words">
+                      {item.nomeCompleto}
+                    </p>
+                    <div className="flex gap-3 mt-1 text-xs text-gray-600 flex-wrap">
+                      <span className="bg-pink-100 px-2 py-0.5 rounded">
+                        {item.itensAcao} promocionais
+                      </span>
+                      <span className="bg-blue-100 px-2 py-0.5 rounded">
+                        {item.itensComuns} comuns
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-sm font-bold text-gray-900">
+                      R$ {formatCurrency(item.valor)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {item.itensGerais} itens total
+                    </p>
+                  </div>
+                </div>
+                <div className="ml-11 mr-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className={`h-2.5 rounded-full ${color} transition-all duration-500 ease-out`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   // Componente de Ranking Visual
   const RankingCard = ({ data, title, subtitle, valueLabel, itemsLabel, color, chartRef, fileName }) => {
     const maxValue = data.length > 0 ? Math.max(...data.map(d => d.valor || d.itens)) : 1;
@@ -188,7 +281,7 @@ const Analytics = ({ data }) => {
                     {item.posicao}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate" title={item.nomeCompleto}>
+                    <p className="text-sm font-semibold text-gray-800 break-words">
                       {item.nomeCompleto}
                     </p>
                   </div>
@@ -300,6 +393,18 @@ const Analytics = ({ data }) => {
 
       {/* Container para todos os gráficos */}
       <div ref={allChartsRef} className="space-y-6 bg-gray-50 p-6 rounded-lg">
+        {/* Ranking Especial - Compradores Completos (PRIMEIRO) */}
+        <div className="mb-6">
+          <RankingCardCompleto
+            data={top10CompradoresCompletos}
+            title="Top 10 - Compradores Completos"
+            subtitle="Revendedores que compraram itens promocionais E itens comuns"
+            color="bg-gradient-to-r from-purple-500 to-violet-600"
+            chartRef={chart5Ref}
+            fileName="top10_compradores_completos"
+          />
+        </div>
+
         {/* Rankings de Itens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RankingCard
