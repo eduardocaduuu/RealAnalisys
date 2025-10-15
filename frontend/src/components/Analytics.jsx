@@ -199,62 +199,80 @@ const Analytics = ({ data, statistics, produtosData }) => {
   }, [filteredData, statistics]);
 
   // Análises de Produtos
-  const top10ProdutosPorQuantidade = React.useMemo(() => {
+  const todosProdutosPorQuantidade = React.useMemo(() => {
     if (!produtosData || produtosData.length === 0) return [];
 
-    // Agrupar produtos por nome e somar quantidades
+    // Agrupar produtos por código e nome, somando quantidades
     const produtosAgrupados = produtosData.reduce((acc, item) => {
+      const codigo = item.codigoProduto || 'S/C';
       const nome = item.nomeProduto || 'Sem Nome';
-      if (!acc[nome]) {
-        acc[nome] = { quantidade: 0, valor: 0 };
+      const chave = `${codigo}|${nome}`;
+
+      if (!acc[chave]) {
+        acc[chave] = {
+          codigo: codigo,
+          nome: nome,
+          quantidade: 0,
+          valor: 0
+        };
       }
-      acc[nome].quantidade += item.quantidade;
-      acc[nome].valor += item.valor;
+      acc[chave].quantidade += item.quantidade;
+      acc[chave].valor += item.valor;
       return acc;
     }, {});
 
     // Converter para array e ordenar
     return Object.entries(produtosAgrupados)
-      .map(([nome, dados]) => ({
-        nomeProduto: nome,
+      .map(([chave, dados]) => ({
+        codigo: dados.codigo,
+        nomeProduto: dados.nome,
         quantidade: dados.quantidade,
         valor: dados.valor
       }))
       .sort((a, b) => b.quantidade - a.quantidade)
-      .slice(0, 10)
       .map((item, index) => ({
         posicao: index + 1,
+        codigo: item.codigo,
         nomeCompleto: item.nomeProduto,
         quantidade: item.quantidade,
         valor: item.valor
       }));
   }, [produtosData]);
 
-  const top10ProdutosPorValor = React.useMemo(() => {
+  const todosProdutosPorValor = React.useMemo(() => {
     if (!produtosData || produtosData.length === 0) return [];
 
-    // Agrupar produtos por nome e somar valores
+    // Agrupar produtos por código e nome, somando valores
     const produtosAgrupados = produtosData.reduce((acc, item) => {
+      const codigo = item.codigoProduto || 'S/C';
       const nome = item.nomeProduto || 'Sem Nome';
-      if (!acc[nome]) {
-        acc[nome] = { quantidade: 0, valor: 0 };
+      const chave = `${codigo}|${nome}`;
+
+      if (!acc[chave]) {
+        acc[chave] = {
+          codigo: codigo,
+          nome: nome,
+          quantidade: 0,
+          valor: 0
+        };
       }
-      acc[nome].quantidade += item.quantidade;
-      acc[nome].valor += item.valor;
+      acc[chave].quantidade += item.quantidade;
+      acc[chave].valor += item.valor;
       return acc;
     }, {});
 
     // Converter para array e ordenar por valor
     return Object.entries(produtosAgrupados)
-      .map(([nome, dados]) => ({
-        nomeProduto: nome,
+      .map(([chave, dados]) => ({
+        codigo: dados.codigo,
+        nomeProduto: dados.nome,
         quantidade: dados.quantidade,
         valor: dados.valor
       }))
       .sort((a, b) => b.valor - a.valor)
-      .slice(0, 10)
       .map((item, index) => ({
         posicao: index + 1,
+        codigo: item.codigo,
         nomeCompleto: item.nomeProduto,
         quantidade: item.quantidade,
         valor: item.valor
@@ -383,6 +401,9 @@ const Analytics = ({ data, statistics, produtosData }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800 break-words">
+                      <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-mono mr-2">
+                        {item.codigo}
+                      </span>
                       {item.nomeCompleto}
                     </p>
                   </div>
@@ -656,23 +677,23 @@ const Analytics = ({ data, statistics, produtosData }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <RankingCardProduto
-                data={top10ProdutosPorQuantidade}
-                title="Top 10 Produtos - Quantidade"
-                subtitle="Produtos mais vendidos (unidades)"
+                data={todosProdutosPorQuantidade}
+                title="Produtos - Ordenados por Quantidade"
+                subtitle={`${todosProdutosPorQuantidade.length} produtos diferentes vendidos`}
                 showQuantity={true}
                 color="bg-gradient-to-r from-teal-500 to-cyan-500"
                 chartRef={chart6Ref}
-                fileName="top10_produtos_quantidade"
+                fileName="produtos_por_quantidade"
               />
 
               <RankingCardProduto
-                data={top10ProdutosPorValor}
-                title="Top 10 Produtos - Faturamento"
-                subtitle="Produtos que mais faturaram"
+                data={todosProdutosPorValor}
+                title="Produtos - Ordenados por Faturamento"
+                subtitle={`${todosProdutosPorValor.length} produtos diferentes vendidos`}
                 showValue={true}
                 color="bg-gradient-to-r from-cyan-500 to-blue-500"
                 chartRef={chart7Ref}
-                fileName="top10_produtos_faturamento"
+                fileName="produtos_por_faturamento"
               />
             </div>
           </>

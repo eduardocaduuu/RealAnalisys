@@ -52,7 +52,7 @@ export const compareData = (baseData, comparisonData) => {
   return results;
 };
 
-export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosExtras = null, comparisonData = []) => {
+export const calculateStatistics = (results, totalRevendedoresAcao = 0, totalRevendedoresGeral = 0, dadosExtras = null, comparisonData = []) => {
   if (results.length === 0) {
     return {
       totalRevendedores: 0,
@@ -69,7 +69,8 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
     };
   }
 
-  const totalRevendedores = results.length;
+  // Usar o total de revendedores únicos passado como parâmetro
+  const totalRevendedores = totalRevendedoresAcao;
 
   const percentualRevendedoresAcao = totalRevendedoresGeral > 0
     ? ((totalRevendedores / totalRevendedoresGeral) * 100).toFixed(2)
