@@ -45,13 +45,21 @@ router.post('/', upload.fields([
     const baseData = parseExcel(planilhaBaseBuffer);
     const comparisonData = parseExcel(planilhaComparacaoBuffer);
 
-    const baseColumns = ['NomeRevendedora', 'QuantidadeItens', 'ValorPraticado'];
+    const baseColumns = ['NomeRevendedora', 'QuantidadeItens', 'ValorPraticado', 'NomeProduto'];
     const comparisonColumns = ['NomeRevendedora', 'QuantidadeItens', 'ValorPraticado'];
 
     const filteredBase = filterColumns(baseData, baseColumns);
     const filteredComparison = filterColumns(comparisonData, comparisonColumns);
 
     const results = compareData(filteredBase, filteredComparison);
+
+    // Retornar também os dados brutos da planilha base para análise de produtos
+    const produtosData = baseData.map(row => ({
+      nomeRevendedora: row.NomeRevendedora || '',
+      nomeProduto: row.NomeProduto || '',
+      quantidade: Number(row.QuantidadeItens) || 0,
+      valor: Number(row.ValorPraticado) || 0
+    }));
 
     // Contar total de revendedores únicos na planilha de comparação
     const totalRevendedoresGeral = new Set(
@@ -64,7 +72,8 @@ router.post('/', upload.fields([
       success: true,
       data: results,
       statistics: statistics,
-      dadosExtras: dadosExtras
+      dadosExtras: dadosExtras,
+      produtosData: produtosData
     });
 
   } catch (error) {

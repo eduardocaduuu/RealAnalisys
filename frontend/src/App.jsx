@@ -8,6 +8,7 @@ function App() {
   const [loading, setLoading] = React.useState(false);
   const [results, setResults] = React.useState(null);
   const [statistics, setStatistics] = React.useState(null);
+  const [produtosData, setProdutosData] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [currentTab, setCurrentTab] = React.useState('home'); // 'home' ou 'analytics'
 
@@ -38,6 +39,7 @@ function App() {
       if (response.data.success) {
         setResults(response.data.data);
         setStatistics(response.data.statistics);
+        setProdutosData(response.data.produtosData || null);
       } else {
         setError(response.data.message || 'Erro ao processar planilhas');
       }
@@ -140,7 +142,7 @@ function App() {
 
         {/* Conteúdo da Aba Analytics */}
         {currentTab === 'analytics' && (
-          <Analytics data={results} statistics={statistics} />
+          <Analytics data={results} statistics={statistics} produtosData={produtosData} />
         )}
       </div>
     </div>

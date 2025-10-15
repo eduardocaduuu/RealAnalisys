@@ -1,7 +1,7 @@
 import React from 'react';
 import html2canvas from 'html2canvas';
 
-const Analytics = ({ data, statistics }) => {
+const Analytics = ({ data, statistics, produtosData }) => {
   const [minValue, setMinValue] = React.useState('');
 
   // Refs para cada gráfico
@@ -10,6 +10,8 @@ const Analytics = ({ data, statistics }) => {
   const chart3Ref = React.useRef(null);
   const chart4Ref = React.useRef(null);
   const chart5Ref = React.useRef(null);
+  const chart6Ref = React.useRef(null);
+  const chart7Ref = React.useRef(null);
   const allChartsRef = React.useRef(null);
 
   // Função para formatar valores monetários
@@ -196,6 +198,69 @@ const Analytics = ({ data, statistics }) => {
       });
   }, [filteredData, statistics]);
 
+  // Análises de Produtos
+  const top10ProdutosPorQuantidade = React.useMemo(() => {
+    if (!produtosData || produtosData.length === 0) return [];
+
+    // Agrupar produtos por nome e somar quantidades
+    const produtosAgrupados = produtosData.reduce((acc, item) => {
+      const nome = item.nomeProduto || 'Sem Nome';
+      if (!acc[nome]) {
+        acc[nome] = { quantidade: 0, valor: 0 };
+      }
+      acc[nome].quantidade += item.quantidade;
+      acc[nome].valor += item.valor;
+      return acc;
+    }, {});
+
+    // Converter para array e ordenar
+    return Object.entries(produtosAgrupados)
+      .map(([nome, dados]) => ({
+        nomeProduto: nome,
+        quantidade: dados.quantidade,
+        valor: dados.valor
+      }))
+      .sort((a, b) => b.quantidade - a.quantidade)
+      .slice(0, 10)
+      .map((item, index) => ({
+        posicao: index + 1,
+        nomeCompleto: item.nomeProduto,
+        quantidade: item.quantidade,
+        valor: item.valor
+      }));
+  }, [produtosData]);
+
+  const top10ProdutosPorValor = React.useMemo(() => {
+    if (!produtosData || produtosData.length === 0) return [];
+
+    // Agrupar produtos por nome e somar valores
+    const produtosAgrupados = produtosData.reduce((acc, item) => {
+      const nome = item.nomeProduto || 'Sem Nome';
+      if (!acc[nome]) {
+        acc[nome] = { quantidade: 0, valor: 0 };
+      }
+      acc[nome].quantidade += item.quantidade;
+      acc[nome].valor += item.valor;
+      return acc;
+    }, {});
+
+    // Converter para array e ordenar por valor
+    return Object.entries(produtosAgrupados)
+      .map(([nome, dados]) => ({
+        nomeProduto: nome,
+        quantidade: dados.quantidade,
+        valor: dados.valor
+      }))
+      .sort((a, b) => b.valor - a.valor)
+      .slice(0, 10)
+      .map((item, index) => ({
+        posicao: index + 1,
+        nomeCompleto: item.nomeProduto,
+        quantidade: item.quantidade,
+        valor: item.valor
+      }));
+  }, [produtosData]);
+
   // Componente de Ranking Visual Especial para Compradores Completos
   const RankingCardCompleto = ({ data, title, subtitle, color, chartRef, fileName }) => {
     const maxValue = data.length > 0 ? Math.max(...data.map(d => d.valor)) : 1;
@@ -263,6 +328,80 @@ const Analytics = ({ data, statistics }) => {
                     <p className="text-xs text-gray-500">
                       {item.itensGerais} itens total
                     </p>
+                  </div>
+                </div>
+                <div className="ml-11 mr-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className={`h-2.5 rounded-full ${color} transition-all duration-500 ease-out`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // Componente de Ranking Visual para Produtos
+  const RankingCardProduto = ({ data, title, subtitle, showQuantity, showValue, color, chartRef, fileName }) => {
+    const maxValue = data.length > 0
+      ? Math.max(...data.map(d => showQuantity ? d.quantidade : d.valor))
+      : 1;
+
+    return (
+      <div ref={chartRef} className="card">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+          </div>
+          <button
+            onClick={() => downloadChartAsPNG(chartRef, fileName)}
+            className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            PNG
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {data.map((item) => {
+            const value = showQuantity ? item.quantidade : item.valor;
+            const percentage = (value / maxValue) * 100;
+
+            return (
+              <div key={item.posicao} className="group">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-full ${color} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
+                    {item.posicao}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 break-words">
+                      {item.nomeCompleto}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    {showQuantity && (
+                      <p className="text-sm font-bold text-gray-900">
+                        {item.quantidade} unidades
+                      </p>
+                    )}
+                    {showValue && (
+                      <p className="text-sm font-bold text-gray-900">
+                        R$ {formatCurrency(item.valor)}
+                      </p>
+                    )}
+                    {showQuantity && (
+                      <p className="text-xs text-gray-500">
+                        R$ {formatCurrency(item.valor)}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="ml-11 mr-2">
@@ -497,6 +636,47 @@ const Analytics = ({ data, statistics }) => {
             fileName="top10_valor_geral"
           />
         </div>
+
+        {/* Análise de Produtos Específicos */}
+        {produtosData && produtosData.length > 0 && (
+          <>
+            <div className="mt-8 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 p-4 rounded-r-lg">
+              <div className="flex items-start">
+                <svg className="w-6 h-6 text-cyan-600 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                </svg>
+                <div>
+                  <h4 className="text-lg font-bold text-cyan-900 mb-1">Análise de Produtos Específicos</h4>
+                  <p className="text-sm text-cyan-800">
+                    Ranking dos produtos mais vendidos na ação promocional do dia. Esses dados vêm diretamente da planilha base (itens específicos).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <RankingCardProduto
+                data={top10ProdutosPorQuantidade}
+                title="Top 10 Produtos - Quantidade"
+                subtitle="Produtos mais vendidos (unidades)"
+                showQuantity={true}
+                color="bg-gradient-to-r from-teal-500 to-cyan-500"
+                chartRef={chart6Ref}
+                fileName="top10_produtos_quantidade"
+              />
+
+              <RankingCardProduto
+                data={top10ProdutosPorValor}
+                title="Top 10 Produtos - Faturamento"
+                subtitle="Produtos que mais faturaram"
+                showValue={true}
+                color="bg-gradient-to-r from-cyan-500 to-blue-500"
+                chartRef={chart7Ref}
+                fileName="top10_produtos_faturamento"
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
