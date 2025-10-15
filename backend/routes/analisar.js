@@ -58,7 +58,7 @@ router.post('/', upload.fields([
       filteredComparison.map(r => r.NomeRevendedora).filter(nome => nome)
     ).size;
 
-    const statistics = calculateStatistics(results, totalRevendedoresGeral, dadosExtras);
+    const statistics = calculateStatistics(results, totalRevendedoresGeral, dadosExtras, filteredComparison);
 
     res.json({
       success: true,

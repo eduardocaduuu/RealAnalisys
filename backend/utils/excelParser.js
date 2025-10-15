@@ -52,7 +52,7 @@ export const compareData = (baseData, comparisonData) => {
   return results;
 };
 
-export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosExtras = null) => {
+export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosExtras = null, comparisonData = []) => {
   if (results.length === 0) {
     return {
       totalRevendedores: 0,
@@ -80,8 +80,9 @@ export const calculateStatistics = (results, totalRevendedoresGeral = 0, dadosEx
     0
   );
 
-  const valorTotalGeral = results.reduce(
-    (sum, r) => sum + parseFloat(r.valorGeral),
+  // Calcular valor total geral da segunda planilha (Vendas Gerais) - TODOS os dados
+  const valorTotalGeral = comparisonData.reduce(
+    (sum, r) => sum + (parseFloat(r.ValorPraticado) || 0),
     0
   );
 
